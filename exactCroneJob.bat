@@ -1,6 +1,4 @@
 @echo off
 cd /d "%~dp0"
-call conda activate Exact
-python getExactTokenUpdate1.py >> output.log 2>&1
-call conda deactivate
+python getExactTokenUpdate1.py >> exact_communication.log
 @REM pause

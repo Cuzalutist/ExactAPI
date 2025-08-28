@@ -3,6 +3,7 @@
 #     "refresh_token": <Your Latest Refresh Token>,
 #     "client_id": <Your client ID>,
 #     "client_secret": <Your client secret>,
+#     "redirect_uri": <Your Redirect URI>,
 #     "issue_date_utc": <Issue date ISO>,
 #     "expire_date_utc": <Expire Date ISO>
 # }
@@ -110,6 +111,7 @@ def main():
             refresh_token = saved_data.get('refresh_token')
             client_id = saved_data.get('client_id')
             client_secret = saved_data.get('client_secret')
+            redirect_uri = saved_data.get('redirect_uri')
             issue_date_utc = saved_data.get('issue_date_utc')
             expire_date_utc = saved_data.get('expire_date_utc')
             
@@ -121,6 +123,9 @@ def main():
                 return
             if not client_secret:
                 print("Error: No client_secret found in exact_token_response.json")
+                return
+            if not redirect_uri:
+                print("Error: No redirect_uri found in exact_token_response.json")
                 return
             if not issue_date_utc:
                 print("Error: No issue_date_utc found in exact_token_response.json")
@@ -153,14 +158,12 @@ def main():
     
     if result:
         print("Token request successful!!")
-        # print(f"New access token: {result.get('access_token', 'Not found')}")
-        # print(f"Token type: {result.get('token_type', 'Not found')}")
-        # print(f"Expires in: {result.get('expires_in', 'Not found')} seconds")
         print(f"New refresh token: {result.get('refresh_token', 'Not found')}")
         
         # Add client_id and client_secret to the result before saving
         result['client_id'] = client_id
         result['client_secret'] = client_secret
+        result['redirect_uri'] = redirect_uri
 
         #Add current iso datetime and expire datetime
         current_iso = get_current_timezone_iso().isoformat()
@@ -176,18 +179,6 @@ def main():
                 json.dump(result, json_file, indent=4)
         except Exception as e:
             print(f"Error saving to JSON file: {e}")
-        
-        # Create a copy in batch folder with timestamp
-        try:
-            # Create timestamp for filename
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            batch_filename = f"batch/exact_token_response_{timestamp}.json"
-            
-            with open(batch_filename, 'w') as batch_file:
-                json.dump(result, batch_file, indent=4)
-            print(f"Token response copied to batch folder: {batch_filename}")
-        except Exception as e:
-            print(f"Error saving to batch folder: {e}")
     else:
         print("Failed to get token")
 
